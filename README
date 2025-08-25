@@ -20,3 +20,23 @@ O foco é aplicar boas práticas de **data cleaning** para tornar os dados pront
 ## 🗃️ Origem e Contexto
 Os dados são gerados automaticamente por um **script de simulação**, mantendo estrutura realista de campanhas de marketing digital (`orcamento`, `publico_alvo`, `canais_divulgacao`, `tipo_campanha`).  
 O projeto visa demonstrar habilidades práticas em SQL e preparação de dados para análises confiáveis.
+## 🛠️ Passos de Preparação (Realizados em Aula)
+
+Antes de iniciar a resolução das questões do Lab 3, foram realizados alguns **passos preparatórios**, apenas para familiarização com os dados e prática inicial. Esses passos **não fazem parte das respostas finais do projeto**, mas ajudam a contextualizar o trabalho:
+
+1. **Preparação do banco de dados**  
+   - Criação do schema e tabelas para receber os dados do laboratório.
+
+2. **Aplicação do script de geração de dados**  
+   - População automática das colunas: `orcamento`, `publico_alvo`, `canais_divulgacao`, `tipo_campanha`.
+
+3. **Identificação de todos os valores ausentes com uma única query**  
+   - Verificação de quais registros apresentam dados faltantes em qualquer coluna.
+
+4. **Identificação de dados nulos na coluna `orcamento`**  
+   - Query específica para localizar registros com valores nulos na coluna `orcamento`.
+
+5. **Identificação de duplicatas**  
+   - Detecção de registros duplicados para garantir a integridade da base.
+
+> ⚠️ Esses passos foram realizados **somente em aula** para preparar a base de dados.
