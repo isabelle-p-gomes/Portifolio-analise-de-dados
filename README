@@ -1,17 +1,22 @@
 # 🗂 Projeto: Lab 3 – Limpeza de Dados com SQL
 
 ## 🎯 Objetivo
-Aplicar técnicas de **SQL** para limpeza, padronização e codificação de dados inconsistentes em uma base de dados real, garantindo qualidade para análises futuras.  
-O projeto faz parte da **Pós-Graduação em Análise de Dados** e do **Lab 3 da Data Science Academy**.
+Preparar uma base de dados com inconsistências e valores ausentes, aplicando técnicas de **SQL** para limpeza, padronização e codificação de colunas categóricas, garantindo dados confiáveis para análise e futuras modelagens.  
+Este projeto faz parte da **Pós-Graduação em Análise de Dados** e do **Lab 3 da Data Science Academy**.
 
 ---
 
-## 📌 Descrição do Projeto
-O desafio consistiu em trabalhar com uma base de dados com diversos problemas, incluindo:  
+## 📌 Descrição Rápida
+A base apresenta diversos problemas, como:  
 - Valores ausentes na coluna `orcamento`  
 - Registros irrelevantes (`publico_alvo = 'Outros'`)  
-- Outliers  
-- Necessidade de codificação numérica (**Label Encoding**) de colunas categóricas  
+- Presença de outliers  
+- Necessidade de **Label Encoding** para colunas categóricas  
 
-O foco principal foi **preparar os dados para análises confiáveis e futuras modelagens**.
+O foco é aplicar boas práticas de **data cleaning** para tornar os dados prontos para análises profissionais.
 
+---
+
+## 🗃️ Origem e Contexto
+Os dados são gerados automaticamente por um **script de simulação**, mantendo estrutura realista de campanhas de marketing digital (`orcamento`, `publico_alvo`, `canais_divulgacao`, `tipo_campanha`).  
+O projeto visa demonstrar habilidades práticas em SQL e preparação de dados para análises confiáveis.
