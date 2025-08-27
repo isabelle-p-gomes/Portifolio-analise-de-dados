@@ -1,1 +1,149 @@
-- 📄 [Respostas do Lab 3 (post)](./Respostas_Lab3.md)
+Exercício de SQL para Marketing Analytics
+
+Olá pessoal!
+Hoje compartilho um estudo prático de SQL aplicado a um dataset fictício de campanhas de marketing. O objetivo foi trabalhar limpeza, tratamento e transformação de dados para análises e possíveis aplicações em Machine Learning.
+
+Questão 1 – Padronização de Dados
+
+Padronizei os valores da coluna canais_divulgacao para manter consistência. Exemplo: valores como “Facebook ads”, “facebook”, “FACEBOOK ADS” foram normalizados para "Facebook Ads".
+
+UPDATE lab3.marketing_lab3
+SET canais_divulgacao = 'Facebook Ads'
+WHERE LOWER(canais_divulgacao) IN ('facebook ads', 'facebook', 'facebookads');
+
+Questão 2 – Identificação e Remoção de Duplicatas
+
+Identifiquei e removi registros duplicados utilizando a seguinte lógica:
+
+DELETE FROM lab3.marketing_lab3 a
+USING lab3.marketing_lab3 b
+WHERE a.ctid < b.ctid
+AND a.nome_campanha = b.nome_campanha;
+
+Questão 3 – Substituição de Valores Nulos no Orçamento
+
+Substituí valores nulos de orcamento pela média do respectivo canal de divulgação:
+
+SELECT canais_divulgacao, 
+       AVG(orcamento) AS media_orcamento
+FROM lab3.marketing_lab3
+WHERE orcamento IS NOT NULL
+GROUP BY canais_divulgacao;
+
+UPDATE lab3.marketing_lab3 AS c
+SET orcamento = d.media_orcamento
+FROM (
+    SELECT canais_divulgacao, AVG(orcamento) AS media_orcamento
+    FROM lab3.marketing_lab3
+    WHERE orcamento IS NOT NULL
+    GROUP BY canais_divulgacao
+) AS d
+WHERE c.canais_divulgacao = d.canais_divulgacao
+  AND c.orcamento IS NULL;
+
+Questão 4 – Identificação de Outliers
+
+Foi definido como outliers os valores que estão fora da faixa:
+
+média ± 1.5 * desvio padrão
+
+Primeiro, adicionei uma coluna booleana para marcar os outliers:
+
+ALTER TABLE lab3.marketing_lab3 ADD COLUMN outlier BOOLEAN DEFAULT FALSE;
+
+WITH stats AS (
+    SELECT
+        AVG(orcamento) AS avg_orcamento,
+        STDDEV(orcamento) AS stddev_orcamento,
+        AVG(taxa_conversao) AS avg_taxa_conversao,
+        STDDEV(taxa_conversao) AS stddev_taxa_conversao,
+        AVG(impressoes) AS avg_impressoes,
+        STDDEV(impressoes) AS stddev_impressoes
+    FROM lab3.marketing_lab3
+)
+UPDATE lab3.marketing_lab3
+SET outlier = TRUE
+FROM stats
+WHERE
+    orcamento < (avg_orcamento - 1.5 * stddev_orcamento) OR 
+    orcamento > (avg_orcamento + 1.5 * stddev_orcamento) OR
+    taxa_conversao < (avg_taxa_conversao - 1.5 * stddev_taxa_conversao) OR 
+    taxa_conversao > (avg_taxa_conversao + 1.5 * stddev_taxa_conversao) OR
+    impressoes < (avg_impressoes - 1.5 * stddev_impressoes) OR 
+    impressoes > (avg_impressoes + 1.5 * stddev_impressoes);
+
+SELECT outlier, nome_campanha, orcamento, taxa_conversao, impressoes
+FROM lab3.marketing_lab3;
+
+
+Insights: Foram detectados 380 registros outliers em um total de 1000.
+Isso pode indicar campanhas discrepantes, mas ainda assim relevantes, especialmente ao analisar taxa de conversão.
+
+Ainda falta identificar de quais canais esses outliers vêm — isso pode ser feito com um SELECT filtrando outlier = TRUE.
+
+Questão 5 – Label Encoding (Público Alvo)
+
+Convertemos a coluna publico_alvo em formato numérico para uso em Machine Learning:
+
+ALTER TABLE lab3.marketing_lab3 ADD COLUMN publico_alvo_cod INT;
+
+UPDATE lab3.marketing_lab3
+SET publico_alvo_cod = CASE publico_alvo
+    WHEN 'Publico Alvo 1' THEN 1
+    WHEN 'Publico Alvo 2' THEN 2
+    WHEN 'Publico Alvo 3' THEN 3
+    WHEN 'Publico Alvo 4' THEN 4
+    WHEN 'Publico Alvo 5' THEN 5
+    WHEN 'Outros' THEN 0
+    ELSE NULL
+END;
+
+SELECT nome_campanha, publico_alvo, publico_alvo_cod
+FROM lab3.marketing_lab3;
+
+Questão 6 – Label Encoding (Canais de Divulgação)
+
+Aplicamos a mesma lógica para a coluna canais_divulgacao:
+
+ALTER TABLE lab3.marketing_lab3 ADD COLUMN canais_divulgacao_encoded INT;
+
+UPDATE lab3.marketing_lab3
+SET canais_divulgacao_encoded = CASE canais_divulgacao
+    WHEN 'Facebook Ads' THEN 1
+    WHEN 'Google Ads' THEN 2
+    WHEN 'Instagram Ads' THEN 3
+    WHEN 'LinkedIn Ads' THEN 4
+    WHEN 'Outros' THEN 0
+    ELSE NULL
+END;
+
+Questão 7 – Label Encoding (Tipo de Campanha)
+ALTER TABLE lab3.marketing_lab3 ADD COLUMN tipo_campanha_encoded INT;
+
+UPDATE lab3.marketing_lab3
+SET tipo_campanha_encoded = CASE tipo_campanha
+    WHEN 'Conversão' THEN 1
+    WHEN 'Reconhecimento de Marca' THEN 2
+    WHEN 'Engajamento' THEN 3
+    ELSE 0
+END;
+
+Questão 8 – Drop das Colunas Originais
+
+Após codificação, removemos as colunas originais:
+
+ALTER TABLE lab3.marketing_lab3
+DROP COLUMN publico_alvo,
+DROP COLUMN canais_divulgacao,
+DROP COLUMN tipo_campanha;
+
+
+Aprendizados:
+
+A importância da padronização e tratamento de dados antes de análises.
+
+Como SQL pode apoiar Data Cleaning, Feature Engineering e até preparação para Modelos de Machine Learning.
+
+Identificação de outliers e a reflexão sobre manter ou remover valores extremos.
+
+Passos que podem ser realizados: aplicar normalização, criar métricas derivadas e testar alguns modelos preditivos com esses dados tratados.
